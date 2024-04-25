@@ -7,7 +7,7 @@ const db = require("../db");
 router.get('/', async (req, res, next) => {
     try {
         const results = await db.query(`SELECT * FROM invoices`);
-        return res.json({ companies: results.rows });
+        return res.json({ invoices: results.rows });
     } catch (e) {
         return next(e);
     }
@@ -16,13 +16,17 @@ router.get('/', async (req, res, next) => {
 router.get('/:id', async(req, res, next) => {
     try {
         const {id} = req.params;
-        const results = await db.query(`SELECT * FROM invoices  
+        const invResults = await db.query(`SELECT * FROM invoices  
             WHERE id = $1`,
             [id]);
-        if(results.rows.length === 0) {
+        if(invResults.rows.length === 0) {
             throw new ExpressError(`Can't find invoice with id of ${id}`, 404);
         }
-        return res.send({user: results.rows[0]});
+        const inv = invResults.rows[0];
+        const comResults = await db.query(`SELECT * FROM companies
+            WHERE code = $1`, [inv.comp_code]);
+        inv.company = comResults.rows[0];
+        return res.send({invoice: inv});
     } catch (e) {
         return next(e);
     }

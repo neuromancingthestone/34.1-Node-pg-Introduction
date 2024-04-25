@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "express": "^4.19.2",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "supertest": "^7.0.0"
   },
   "scripts": {
     "start": "node server.js"
